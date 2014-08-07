@@ -7,13 +7,13 @@ import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
 /**
  * This animation hides the view by scaling its Y property to mimic the
- * "pulling of blinds".
+ * "pulling of blinds". On animation end, the view is restored to its original
+ * state and is set to <code>View.INVISIBLE</code>.
  * 
  * @author Phu
  * 
@@ -26,7 +26,8 @@ public class BlindAnimation extends Animation {
 
 	/**
 	 * This animation hides the view by scaling its Y property to mimic the
-	 * "pulling of blinds".
+	 * "pulling of blinds". On animation end, the view is restored to its
+	 * original state and is set to <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -40,23 +41,23 @@ public class BlindAnimation extends Animation {
 
 	@Override
 	public void animate() {
-		ViewGroup parent = (ViewGroup) view.getParent();
+		final ViewGroup parent = (ViewGroup) view.getParent(), animationLayout = new FrameLayout(view.getContext());
+		final int positionView = parent.indexOfChild(view);
+		animationLayout.setLayoutParams(view.getLayoutParams());
 		parent.removeView(view);
-		LayoutParams originalParam = view.getLayoutParams();
-		LayoutParams newParam = new LayoutParams(view.getWidth(),
-				view.getHeight());
-		view.setLayoutParams(newParam);
-		ViewGroup animationLayout = new FrameLayout(view.getContext());
-		animationLayout.setId(view.getId());
-		animationLayout.setLayoutParams(originalParam);
 		animationLayout.addView(view);
-		parent.addView(animationLayout);
+		parent.addView(animationLayout, positionView);
 
+		final float originalScaleY = view.getScaleY();
 		ObjectAnimator scaleY = ObjectAnimator.ofFloat(animationLayout,
-				View.SCALE_Y, 1f, 0f), scaleY_child = ObjectAnimator.ofFloat(
-				view, View.SCALE_Y, 1f, 2.5f);
+				View.SCALE_Y, 0f), scaleY_child = ObjectAnimator.ofFloat(view,
+				View.SCALE_Y, 2.5f);
+		
+		animationLayout.setPivotX(1f);
+		animationLayout.setPivotY(1f);
 		view.setPivotX(1f);
 		view.setPivotY(1f);
+		
 		AnimatorSet blindAnimationSet = new AnimatorSet();
 		blindAnimationSet.playTogether(scaleY, scaleY_child);
 		blindAnimationSet.setInterpolator(interpolator);
@@ -65,13 +66,16 @@ public class BlindAnimation extends Animation {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
+				view.setVisibility(View.INVISIBLE);
+				view.setScaleY(originalScaleY);
+				animationLayout.removeAllViews();
+				parent.removeView(animationLayout);
+				parent.addView(view, positionView);
 				if (getListener() != null) {
 					getListener().onAnimationEnd(BlindAnimation.this);
 				}
 			}
 		});
-		animationLayout.setPivotX(1f);
-		animationLayout.setPivotY(1f);
 		blindAnimationSet.start();
 	}
 

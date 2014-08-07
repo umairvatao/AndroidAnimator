@@ -2,6 +2,8 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -33,20 +35,30 @@ public class ScaleInAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		view.setScaleX(0f);
 		view.setScaleY(0f);
 		view.setVisibility(View.VISIBLE);
-		view.animate().scaleX(1f).scaleY(1f).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener().onAnimationEnd(ScaleInAnimation.this);
-						}
-					}
-				});
+		AnimatorSet scaleSet = new AnimatorSet();
+		scaleSet.playTogether(ObjectAnimator.ofFloat(view, View.SCALE_X, 1f),
+				ObjectAnimator.ofFloat(view, View.SCALE_Y, 1f));
+		scaleSet.setInterpolator(interpolator);
+		scaleSet.setDuration(duration);
+		scaleSet.addListener(new AnimatorListenerAdapter() {
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (getListener() != null) {
+					getListener().onAnimationEnd(ScaleInAnimation.this);
+				}
+			}
+		});
+		return scaleSet;
 	}
 
 	/**

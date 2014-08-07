@@ -11,12 +11,14 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * This animation causes the view to flip vertically to reveal another
- * user-provided view at the back of the original view.
+ * user-provided view at the back of the original view. On animation end, the
+ * original view is restored to its original state and is set to
+ * <code>View.INVISIBLE</code>.
  * 
  * @author SiYao
  * 
  */
-public class FlipVerticalToAnimation extends Animation implements Combinable {
+public class FlipVerticalToAnimation extends Animation {
 
 	public static final int PIVOT_CENTER = 0, PIVOT_TOP = 1, PIVOT_BOTTOM = 2;
 
@@ -28,7 +30,9 @@ public class FlipVerticalToAnimation extends Animation implements Combinable {
 
 	/**
 	 * This animation causes the view to flip vertically to reveal another
-	 * user-provided view at the back of the original view.
+	 * user-provided view at the back of the original view. On animation end,
+	 * the original view is restored to its original state and is set to
+	 * <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -50,6 +54,7 @@ public class FlipVerticalToAnimation extends Animation implements Combinable {
 
 		float pivotX, pivotY, flipAngle = 270f, viewWidth = view.getWidth(), viewHeight = view
 				.getHeight();
+		final float originalRotationX = view.getRotationX();
 		switch (pivot) {
 		case PIVOT_TOP:
 			pivotX = viewWidth / 2;
@@ -99,7 +104,7 @@ public class FlipVerticalToAnimation extends Animation implements Combinable {
 			@Override
 			public void onAnimationEnd(Animator animation) {
 				view.setVisibility(View.INVISIBLE);
-				view.setRotationX(0f);
+				view.setRotationX(originalRotationX);
 				if (getListener() != null) {
 					getListener().onAnimationEnd(FlipVerticalToAnimation.this);
 				}

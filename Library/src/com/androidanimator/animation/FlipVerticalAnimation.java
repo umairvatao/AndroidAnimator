@@ -2,6 +2,8 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,15 +35,20 @@ public class FlipVerticalAnimation extends Animation implements Combinable {
 	 */
 	public FlipVerticalAnimation(View view) {
 		this.view = view;
-		interpolator = new AccelerateDecelerateInterpolator();
 		degrees = 360;
 		pivot = PIVOT_CENTER;
+		interpolator = new AccelerateDecelerateInterpolator();
 		duration = DEFAULT_DURATION;
 		listener = null;
 	}
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
 		while (parentView != rootView) {
@@ -69,18 +76,21 @@ public class FlipVerticalAnimation extends Animation implements Combinable {
 		view.setPivotX(pivotX);
 		view.setPivotY(pivotY);
 
-		view.animate().rotationXBy(degrees).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
+		AnimatorSet flipSet = new AnimatorSet();
+		flipSet.play(ObjectAnimator.ofFloat(view, View.ROTATION_X,
+				view.getRotationX() + degrees));
+		flipSet.setInterpolator(interpolator);
+		flipSet.setDuration(duration);
+		flipSet.addListener(new AnimatorListenerAdapter() {
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener().onAnimationEnd(
-									FlipVerticalAnimation.this);
-						}
-					}
-				});
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (getListener() != null) {
+					getListener().onAnimationEnd(FlipVerticalAnimation.this);
+				}
+			}
+		});
+		return flipSet;
 	}
 
 	/**

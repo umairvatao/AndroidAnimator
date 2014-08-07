@@ -2,12 +2,15 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
- * This animation scales out the view from 1 to 0.
+ * This animation scales out the view from 1 to 0. On animation end, the view is
+ * restored to its original state and is set to <code>View.INVISIBLE</code>.
  * 
  * @author SiYao
  * 
@@ -19,7 +22,9 @@ public class ScaleOutAnimation extends Animation implements Combinable {
 	AnimationListener listener;
 
 	/**
-	 * This animation scales out the view from 1 to 0.
+	 * This animation scales out the view from 1 to 0. On animation end, the
+	 * view is restored to its original state and is set to
+	 * <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -33,20 +38,31 @@ public class ScaleOutAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
-		view.setScaleX(1f);
-		view.setScaleY(1f);
-		view.animate().scaleX(0f).scaleY(0f).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
+		getAnimatorSet().start();
+	}
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener()
-									.onAnimationEnd(ScaleOutAnimation.this);
-						}
-					}
-				});
+	@Override
+	public AnimatorSet getAnimatorSet() {
+		final float originalScaleX = view.getScaleX(), originalScaleY = view
+				.getScaleY();
+		AnimatorSet scaleSet = new AnimatorSet();
+		scaleSet.playTogether(ObjectAnimator.ofFloat(view, View.SCALE_X, 0f),
+				ObjectAnimator.ofFloat(view, View.SCALE_Y, 0f));
+		scaleSet.setInterpolator(interpolator);
+		scaleSet.setDuration(duration);
+		scaleSet.addListener(new AnimatorListenerAdapter() {
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				view.setVisibility(View.INVISIBLE);
+				view.setScaleX(originalScaleX);
+				view.setScaleY(originalScaleY);
+				if (getListener() != null) {
+					getListener().onAnimationEnd(ScaleOutAnimation.this);
+				}
+			}
+		});
+		return scaleSet;
 	}
 
 	/**

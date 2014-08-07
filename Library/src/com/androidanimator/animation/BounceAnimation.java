@@ -16,7 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
  * @author SiYao
  * 
  */
-public class BounceAnimation extends Animation implements Combinable {
+public class BounceAnimation extends Animation {
 
 	float bounceDistance;
 	int numOfBounces, bounceCount = 0;

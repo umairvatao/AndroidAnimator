@@ -16,7 +16,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
  * @author SiYao
  * 
  */
-public class ShakeAnimation extends Animation implements Combinable {
+public class ShakeAnimation extends Animation {
 
 	float shakeDistance;
 	int numOfShakes, shakeCount = 0;

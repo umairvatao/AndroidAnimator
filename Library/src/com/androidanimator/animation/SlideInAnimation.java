@@ -2,6 +2,7 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
@@ -38,6 +39,11 @@ public class SlideInAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+	
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
 		while (!parentView.equals(rootView)) {
@@ -69,10 +75,13 @@ public class SlideInAnimation extends Animation implements Combinable {
 		default:
 			break;
 		}
-		slideAnim.setInterpolator(interpolator);
-		slideAnim.setDuration(duration);
-		slideAnim.addListener(new AnimatorListenerAdapter() {
 
+		AnimatorSet slideSet = new AnimatorSet();
+		slideSet.play(slideAnim);
+		slideSet.setInterpolator(interpolator);
+		slideSet.setDuration(duration);
+		slideSet.addListener(new AnimatorListenerAdapter() {
+			
 			@Override
 			public void onAnimationStart(Animator animation) {
 				view.setVisibility(View.VISIBLE);
@@ -85,7 +94,7 @@ public class SlideInAnimation extends Animation implements Combinable {
 				}
 			}
 		});
-		slideAnim.start();
+		return slideSet;
 	}
 
 	/**

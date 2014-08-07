@@ -2,12 +2,16 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
- * This animation fades the view out by animating its alpha property to 0.
+ * This animation fades the view out by animating its alpha property to 0. On
+ * animation end, the view is restored to its original state and is set to
+ * <code>View.INVISIBLE</code>.
  * 
  * @author SiYao
  * 
@@ -20,6 +24,8 @@ public class FadeOutAnimation extends Animation implements Combinable {
 
 	/**
 	 * This animation fades the view out by animating its alpha property to 0.
+	 * On animation end, the view is restored to its original state and is set
+	 * to <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -33,17 +39,28 @@ public class FadeOutAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
-		view.animate().alpha(0f).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
+		getAnimatorSet().start();
+	}
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener().onAnimationEnd(FadeOutAnimation.this);
-						}
-					}
-				});
+	@Override
+	public AnimatorSet getAnimatorSet() {
+		final float originalAlpha = view.getAlpha();
+		AnimatorSet fadeSet = new AnimatorSet();
+		fadeSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 0f));
+		fadeSet.setInterpolator(interpolator);
+		fadeSet.setDuration(duration);
+		fadeSet.addListener(new AnimatorListenerAdapter() {
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				view.setVisibility(View.INVISIBLE);
+				view.setAlpha(originalAlpha);
+				if (getListener() != null) {
+					getListener().onAnimationEnd(FadeOutAnimation.this);
+				}
+			}
+		});
+		return fadeSet;
 	}
 
 	/**

@@ -2,6 +2,8 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +45,11 @@ public class RotationAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
 		while (parentView != rootView) {
@@ -77,18 +84,22 @@ public class RotationAnimation extends Animation implements Combinable {
 		}
 		view.setPivotX(pivotX);
 		view.setPivotY(pivotY);
-		view.animate().rotationBy(degrees).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener()
-									.onAnimationEnd(RotationAnimation.this);
-						}
-					}
-				});
+		AnimatorSet rotationSet = new AnimatorSet();
+		rotationSet.play(ObjectAnimator.ofFloat(view, View.ROTATION,
+				view.getRotation() + degrees));
+		rotationSet.setInterpolator(interpolator);
+		rotationSet.setDuration(duration);
+		rotationSet.addListener(new AnimatorListenerAdapter() {
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (getListener() != null) {
+					getListener().onAnimationEnd(RotationAnimation.this);
+				}
+			}
+		});
+		return rotationSet;
 	}
 
 	/**

@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
- * This animation scales up and fades out the view.
+ * This animation scales up and fades out the view. On animation end, the view
+ * is restored to its original state and is set to <code>View.INVISIBLE</code>.
  * 
  * @author Phu
  * 
@@ -20,7 +21,9 @@ public class PuffOutAnimation extends Animation {
 	AnimationListener listener;
 
 	/**
-	 * This animation scales up and fades out the view.
+	 * This animation scales up and fades out the view. On animation end, the
+	 * view is restored to its original state and is set to
+	 * <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -42,12 +45,18 @@ public class PuffOutAnimation extends Animation {
 		}
 		rootView.setClipChildren(false);
 
+		final float originalScaleX = view.getScaleX(), originalScaleY = view
+				.getScaleY(), originalAlpha = view.getAlpha();
 		view.animate().scaleX(4f).scaleY(4f).alpha(0f)
 				.setInterpolator(interpolator).setDuration(duration)
 				.setListener(new AnimatorListenerAdapter() {
 
 					@Override
 					public void onAnimationEnd(Animator animation) {
+						view.setVisibility(View.INVISIBLE);
+						view.setScaleX(originalScaleX);
+						view.setScaleY(originalScaleY);
+						view.setAlpha(originalAlpha);
 						if (getListener() != null) {
 							getListener().onAnimationEnd(PuffOutAnimation.this);
 						}

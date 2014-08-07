@@ -2,14 +2,18 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
- * This animation causes the view to slide out to the borders of the screen.
+ * This animation causes the view to slide out to the borders of the screen. On
+ * animation end, the view is restored to its original state and is set to
+ * <code>View.INVISIBLE</code>.
  * 
  * @author SiYao
  * 
@@ -20,9 +24,12 @@ public class SlideOutAnimation extends Animation implements Combinable {
 	TimeInterpolator interpolator;
 	long duration;
 	AnimationListener listener;
+	ValueAnimator slideAnim;
 
 	/**
 	 * This animation causes the view to slide out to the borders of the screen.
+	 * On animation end, the view is restored to its original state and is set
+	 * to <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -37,6 +44,11 @@ public class SlideOutAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
 		while (!parentView.equals(rootView)) {
@@ -48,7 +60,6 @@ public class SlideOutAnimation extends Animation implements Combinable {
 		final int[] locationView = new int[2];
 		view.getLocationOnScreen(locationView);
 
-		ObjectAnimator slideAnim = null;
 		switch (direction) {
 		case DIRECTION_LEFT:
 			slideAnim = ObjectAnimator.ofFloat(view, View.X, -locationView[0]
@@ -69,18 +80,23 @@ public class SlideOutAnimation extends Animation implements Combinable {
 		default:
 			break;
 		}
-		slideAnim.setInterpolator(interpolator);
-		slideAnim.setDuration(duration);
-		slideAnim.addListener(new AnimatorListenerAdapter() {
+
+		AnimatorSet slideSet = new AnimatorSet();
+		slideSet.play(slideAnim);
+		slideSet.setInterpolator(interpolator);
+		slideSet.setDuration(duration);
+		slideSet.addListener(new AnimatorListenerAdapter() {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
+				view.setVisibility(View.INVISIBLE);
+				slideAnim.reverse();
 				if (getListener() != null) {
 					getListener().onAnimationEnd(SlideOutAnimation.this);
 				}
 			}
 		});
-		slideAnim.start();
+		return slideSet;
 	}
 
 	/**

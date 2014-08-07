@@ -16,3 +16,4 @@ public interface AnimationListener {
 	 */
 	public void onAnimationEnd(Animation animation);
 }
+

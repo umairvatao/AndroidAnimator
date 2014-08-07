@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 
 import com.androidanimator.animation.Animation;
@@ -17,6 +18,8 @@ import com.androidanimator.animation.BlindAnimation;
 import com.androidanimator.animation.BlinkAnimation;
 import com.androidanimator.animation.BounceAnimation;
 import com.androidanimator.animation.ExplodeAnimation;
+import com.androidanimator.animation.FadeInAnimation;
+import com.androidanimator.animation.FadeOutAnimation;
 import com.androidanimator.animation.FlipHorizontalAnimation;
 import com.androidanimator.animation.FlipHorizontalToAnimation;
 import com.androidanimator.animation.FlipVerticalAnimation;
@@ -24,6 +27,7 @@ import com.androidanimator.animation.FlipVerticalToAnimation;
 import com.androidanimator.animation.FoldAnimation;
 import com.androidanimator.animation.HighlightAnimation;
 import com.androidanimator.animation.ParallelAnimator;
+import com.androidanimator.animation.ParallelAnimatorListener;
 import com.androidanimator.animation.PathAnimation;
 import com.androidanimator.animation.PuffInAnimation;
 import com.androidanimator.animation.PuffOutAnimation;
@@ -106,20 +110,20 @@ public class AnimationDetailFragment extends Fragment implements
 		mPlayView.setLayoutParams(mImgTarget.getLayoutParams());
 
 		// Scales the image smaller for PathAnimation
-		if (mItem.id == 11) {
+		if (mItem.id == 13) {
 			mImgTarget.setScaleX(0.5f);
 			mImgTarget.setScaleY(0.5f);
 		}
 
 		// Sets view to <code>View.INVISIBLE</code> for entrance animations
-		if (mItem.id == 0 || mItem.id == 12 || mItem.id == 15 || mItem.id == 18
-				|| mItem.id == 19 || mItem.id == 23) {
+		if (mItem.id == 5 || mItem.id == 14 || mItem.id == 17 || mItem.id == 20
+				|| mItem.id == 21 || mItem.id == 25) {
 			mImgTarget.setVisibility(View.INVISIBLE);
 		}
 
 		// Sets destination view to <code>View.VISIBLE</code> only for
 		// TransferAnimation
-		if (mItem.id != 22) {
+		if (mItem.id != 24) {
 			mDestination.setVisibility(View.INVISIBLE);
 		}
 
@@ -140,27 +144,6 @@ public class AnimationDetailFragment extends Fragment implements
 	 */
 	private void doAnimation() {
 		switch (mItem.id) {
-		case 0:
-			new ParallelAnimator()
-					.add(new FlipHorizontalAnimation(mImgTarget)
-							.setDuration(1000))
-					.add(new FlipVerticalAnimation(mImgTarget)
-							.setDuration(1000))
-					.add(new ScaleInAnimation(mImgTarget).setDuration(1000)
-							.setListener(new AnimationListener() {
-
-								@Override
-								public void onAnimationEnd(Animation animation) {
-									new ParallelAnimator()
-											.add(new BounceAnimation(mImgTarget)
-													.setDuration(1000))
-											.add(new SlideOutAnimation(
-													mImgTarget)
-													.setDuration(1000))
-											.animate();
-								}
-							})).animate();
-			break;
 		case 1:
 			new BlindAnimation(mImgTarget).animate();
 			break;
@@ -187,6 +170,12 @@ public class AnimationDetailFragment extends Fragment implements
 			new ExplodeAnimation(mImgTarget).animate();
 			break;
 		case 5:
+			new FadeInAnimation(mImgTarget).animate();
+			break;
+		case 6:
+			new FadeOutAnimation(mImgTarget).animate();
+			break;
+		case 7:
 			new FlipHorizontalAnimation(mImgTarget).setListener(
 					new AnimationListener() {
 
@@ -196,11 +185,11 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 6:
+		case 8:
 			new FlipHorizontalToAnimation(mImgTarget).setFlipToView(mImgBehind)
 					.setDuration(300).animate();
 			break;
-		case 7:
+		case 9:
 			new FlipVerticalAnimation(mImgTarget).setListener(
 					new AnimationListener() {
 
@@ -210,14 +199,14 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 8:
+		case 10:
 			new FlipVerticalToAnimation(mImgTarget).setFlipToView(mImgBehind)
 					.setDuration(300).animate();
 			break;
-		case 9:
+		case 11:
 			new FoldAnimation(mImgTarget).animate();
 			break;
-		case 10:
+		case 12:
 			new HighlightAnimation(mImgTarget).setListener(
 					new AnimationListener() {
 
@@ -227,7 +216,7 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 11:
+		case 13:
 			ArrayList<Point> points = new ArrayList<>();
 			points.add(new Point(0, 100));
 			points.add(new Point(50, 0));
@@ -245,13 +234,13 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 12:
+		case 14:
 			new PuffInAnimation(mImgTarget).animate();
 			break;
-		case 13:
+		case 15:
 			new PuffOutAnimation(mImgTarget).animate();
 			break;
-		case 14:
+		case 16:
 			new RotationAnimation(mImgTarget)
 					.setPivot(RotationAnimation.PIVOT_TOP_LEFT)
 					.setListener(new AnimationListener() {
@@ -262,13 +251,13 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 15:
+		case 17:
 			new ScaleInAnimation(mImgTarget).animate();
 			break;
-		case 16:
+		case 18:
 			new ScaleOutAnimation(mImgTarget).animate();
 			break;
-		case 17:
+		case 19:
 			new ShakeAnimation(mImgTarget).setDuration(100)
 					.setListener(new AnimationListener() {
 
@@ -278,25 +267,114 @@ public class AnimationDetailFragment extends Fragment implements
 						}
 					}).animate();
 			break;
-		case 18:
+		case 20:
 			new SlideInAnimation(mImgTarget).setDirection(
 					Animation.DIRECTION_UP).animate();
 			break;
-		case 19:
+		case 21:
 			new SlideInUnderneathAnimation(mImgTarget).setDirection(
 					Animation.DIRECTION_DOWN).animate();
 			break;
-		case 20:
+		case 22:
 			new SlideOutAnimation(mImgTarget).setDirection(
 					Animation.DIRECTION_LEFT).animate();
 			break;
-		case 21:
+		case 23:
 			new SlideOutUnderneathAnimation(mImgTarget).setDirection(
 					Animation.DIRECTION_RIGHT).animate();
 			break;
-		case 22:
+		case 24:
 			new TransferAnimation(mImgTarget).setDestinationView(mDestination)
 					.animate();
+			break;
+		case 25:
+			mImgTarget.setImageResource(R.drawable.img1);
+			final AnimationListener explodeAnimListener = new AnimationListener() {
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					mImgTarget.setVisibility(View.INVISIBLE);
+					mPlayView.setVisibility(View.VISIBLE);
+				}
+			};
+
+			final AnimationListener bounceAnimListener = new AnimationListener() {
+
+				@Override
+				public void onAnimationEnd(Animation animation) {
+					new ExplodeAnimation(mImgBehind).setListener(
+							explodeAnimListener).animate();
+				}
+			};
+
+			final ParallelAnimatorListener slideFadeInAnimListener = new ParallelAnimatorListener() {
+
+				@Override
+				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
+					BounceAnimation bounceAnim = new BounceAnimation(mImgBehind);
+					bounceAnim.setNumOfBounces(10);
+					bounceAnim.setListener(bounceAnimListener);
+					bounceAnim.animate();
+				}
+			};
+
+			final ParallelAnimatorListener slideFadeOutAnimListener = new ParallelAnimatorListener() {
+
+				@Override
+				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
+					ParallelAnimator slideFadeInAnim = new ParallelAnimator();
+					slideFadeInAnim.setDuration(1000);
+					slideFadeInAnim.add(new SlideInAnimation(mImgBehind)
+							.setDirection(Animation.DIRECTION_RIGHT));
+					slideFadeInAnim.add(new FadeInAnimation(mImgBehind));
+					slideFadeInAnim.setListener(slideFadeInAnimListener);
+					slideFadeInAnim.animate();
+				}
+			};
+
+			final ParallelAnimatorListener rotatePathAnimListener = new ParallelAnimatorListener() {
+
+				@Override
+				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
+					ParallelAnimator slideFadeOutAnim = new ParallelAnimator();
+					slideFadeOutAnim.setDuration(1000);
+					slideFadeOutAnim.add(new SlideOutAnimation(mImgTarget)
+							.setDirection(Animation.DIRECTION_RIGHT));
+					slideFadeOutAnim.add(new FadeOutAnimation(mImgTarget));
+					slideFadeOutAnim.setInterpolator(new LinearInterpolator());
+					slideFadeOutAnim.setListener(slideFadeOutAnimListener);
+					slideFadeOutAnim.animate();
+				}
+			};
+
+			final ParallelAnimatorListener scaleFlipAnimListener = new ParallelAnimatorListener() {
+
+				@Override
+				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
+					ArrayList<Point> parallelPoints = new ArrayList<>();
+					parallelPoints.add(new Point(50, 0));
+					parallelPoints.add(new Point(100, 50));
+					parallelPoints.add(new Point(50, 100));
+					parallelPoints.add(new Point(0, 50));
+					parallelPoints.add(new Point(50, 50));
+					ParallelAnimator rotatePathAnim = new ParallelAnimator();
+					rotatePathAnim.setDuration(2000);
+					rotatePathAnim.add(new PathAnimation(mImgTarget)
+							.setPoints(parallelPoints));
+					rotatePathAnim.add(new RotationAnimation(mImgTarget));
+					rotatePathAnim.setInterpolator(new LinearInterpolator());
+					rotatePathAnim.setListener(rotatePathAnimListener);
+					rotatePathAnim.animate();
+				}
+			};
+
+			ParallelAnimator scaleFlipAnim = new ParallelAnimator();
+			scaleFlipAnim.setDuration(2000);
+			scaleFlipAnim.add(new ScaleInAnimation(mImgTarget));
+			scaleFlipAnim.add(new FlipHorizontalAnimation(mImgTarget));
+			scaleFlipAnim.add(new FlipVerticalAnimation(mImgTarget));
+			scaleFlipAnim.setListener(scaleFlipAnimListener);
+			scaleFlipAnim.animate();
 			break;
 		default:
 			break;

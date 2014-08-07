@@ -2,6 +2,8 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,11 @@ public class FlipHorizontalAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
 		while (parentView != rootView) {
@@ -68,19 +75,21 @@ public class FlipHorizontalAnimation extends Animation implements Combinable {
 		}
 		view.setPivotX(pivotX);
 		view.setPivotY(pivotY);
+		AnimatorSet flipSet = new AnimatorSet();
+		flipSet.play(ObjectAnimator.ofFloat(view, View.ROTATION_Y,
+				view.getRotationY() + degrees));
+		flipSet.setInterpolator(interpolator);
+		flipSet.setDuration(duration);
+		flipSet.addListener(new AnimatorListenerAdapter() {
 
-		view.animate().rotationYBy(degrees).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
-
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener().onAnimationEnd(
-									FlipHorizontalAnimation.this);
-						}
-					}
-				});
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (getListener() != null) {
+					getListener().onAnimationEnd(FlipHorizontalAnimation.this);
+				}
+			}
+		});
+		return flipSet;
 	}
 
 	/**

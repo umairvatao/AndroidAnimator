@@ -54,13 +54,25 @@ public class PathAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		ViewGroup parentView = (ViewGroup) view.getParent(), rootView = (ViewGroup) view
 				.getRootView();
-		AnimatorSet allPathsAnim = new AnimatorSet(), pathAnim = new AnimatorSet();
+		while (!parentView.equals(rootView)) {
+			parentView.setClipChildren(false);
+			parentView = (ViewGroup) parentView.getParent();
+		}
+		rootView.setClipChildren(false);
+
+		AnimatorSet pathSet = new AnimatorSet();
 		int numOfPoints = points.size();
 		AnimatorSet[] pathAnimSetArray = new AnimatorSet[numOfPoints];
 		List<Animator> pathAnimList = new ArrayList<Animator>();
 
+		parentView = (ViewGroup) view.getParent();
 		int parentWidth = parentView.getWidth(), parentHeight = parentView
 				.getHeight(), viewWidth = view.getWidth(), viewHeight = view
 				.getHeight();
@@ -94,17 +106,10 @@ public class PathAnimation extends Animation implements Combinable {
 			pathAnimList.add(pathAnimSetArray[i]);
 		}
 
-		while (!parentView.equals(rootView)) {
-			parentView.setClipChildren(false);
-			parentView = (ViewGroup) parentView.getParent();
-		}
-		rootView.setClipChildren(false);
-
-		allPathsAnim.playSequentially(pathAnimList);
-		pathAnim.play(allPathsAnim);
-		allPathsAnim.setInterpolator(interpolator);
-		allPathsAnim.setDuration(duration / numOfPoints);
-		allPathsAnim.addListener(new AnimatorListenerAdapter() {
+		pathSet.playSequentially(pathAnimList);
+		pathSet.setInterpolator(interpolator);
+		pathSet.setDuration(duration / numOfPoints);
+		pathSet.addListener(new AnimatorListenerAdapter() {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
@@ -113,7 +118,7 @@ public class PathAnimation extends Animation implements Combinable {
 				}
 			}
 		});
-		allPathsAnim.start();
+		return pathSet;
 	}
 
 	/**

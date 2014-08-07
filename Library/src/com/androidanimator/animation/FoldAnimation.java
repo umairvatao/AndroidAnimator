@@ -7,13 +7,13 @@ import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
 /**
  * This animation hides the view by scaling its X and Y properties to mimic a
- * folding effect.
+ * folding effect. On animation end, the view is restored to its original state
+ * and is set to <code>View.INVISIBLE</code>.
  * 
  * @author Phu
  * 
@@ -26,7 +26,8 @@ public class FoldAnimation extends Animation {
 
 	/**
 	 * This animation hides the view by scaling its X and Y properties to mimic
-	 * a folding effect.
+	 * a folding effect. On animation end, the view is restored to its original
+	 * state and is set to <code>View.INVISIBLE</code>.
 	 * 
 	 * @param view
 	 *            The view to be animated.
@@ -40,22 +41,16 @@ public class FoldAnimation extends Animation {
 
 	@Override
 	public void animate() {
-		ViewGroup parent = (ViewGroup) view.getParent();
+		final ViewGroup parent = (ViewGroup) view.getParent(), animationLayout = new FrameLayout(
+				view.getContext());
+		final int positionView = parent.indexOfChild(view);
+		animationLayout.setLayoutParams(view.getLayoutParams());
 		parent.removeView(view);
-		LayoutParams originalParam = view.getLayoutParams(), newParam = new LayoutParams(
-				view.getWidth(), view.getHeight());
-		view.setLayoutParams(newParam);
-		FrameLayout animationLayout = new FrameLayout(view.getContext());
-		animationLayout.setId(view.getId());
-		animationLayout.setLayoutParams(originalParam);
 		animationLayout.addView(view);
-		parent.addView(animationLayout);
+		parent.addView(animationLayout, positionView);
 
-		animationLayout.setPivotX(1f);
-		animationLayout.setPivotY(1f);
-		view.setPivotX(1f);
-		view.setPivotY(1f);
-
+		final float originalScaleX = view.getScaleX(), originalScaleY = view
+				.getScaleY();
 		ObjectAnimator animY1 = ObjectAnimator.ofFloat(animationLayout,
 				View.SCALE_Y, 1f, 0.5f), animY1_child = ObjectAnimator.ofFloat(
 				view, View.SCALE_Y, 1f, 2f), animY2 = ObjectAnimator.ofFloat(
@@ -63,6 +58,11 @@ public class FoldAnimation extends Animation {
 				.ofFloat(animationLayout, View.SCALE_X, 1f, 0f), animY2_child = ObjectAnimator
 				.ofFloat(view, View.SCALE_Y, 2f, 2.5f), animX_child = ObjectAnimator
 				.ofFloat(view, View.SCALE_X, 1f, 2.5f);
+
+		animationLayout.setPivotX(1f);
+		animationLayout.setPivotY(1f);
+		view.setPivotX(1f);
+		view.setPivotY(1f);
 
 		AnimatorSet fold2 = new AnimatorSet();
 		fold2.playTogether(animY2, animX, animY2_child, animX_child);
@@ -78,6 +78,12 @@ public class FoldAnimation extends Animation {
 
 			@Override
 			public void onAnimationEnd(Animator animation) {
+				view.setVisibility(View.INVISIBLE);
+				view.setScaleX(originalScaleX);
+				view.setScaleY(originalScaleY);
+				animationLayout.removeAllViews();
+				parent.removeView(animationLayout);
+				parent.addView(view, positionView);
 				if (getListener() != null) {
 					getListener().onAnimationEnd(FoldAnimation.this);
 				}

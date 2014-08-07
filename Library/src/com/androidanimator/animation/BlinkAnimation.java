@@ -1,7 +1,5 @@
 package com.androidanimator.animation;
 
-import com.androidanimator.animation.AnimationListener;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -17,7 +15,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
  * @author SiYao
  * 
  */
-public class BlinkAnimation extends Animation implements Combinable {
+public class BlinkAnimation extends Animation {
 
 	int numOfBlinks, blinkCount = 0;
 	TimeInterpolator interpolator;

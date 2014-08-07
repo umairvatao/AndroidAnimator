@@ -2,6 +2,8 @@ package com.androidanimator.animation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -34,19 +36,28 @@ public class FadeInAnimation extends Animation implements Combinable {
 
 	@Override
 	public void animate() {
+		getAnimatorSet().start();
+	}
+
+	@Override
+	public AnimatorSet getAnimatorSet() {
 		view.setAlpha(0f);
 		view.setVisibility(View.VISIBLE);
-		view.animate().alpha(1f).setInterpolator(interpolator)
-				.setDuration(duration)
-				.setListener(new AnimatorListenerAdapter() {
 
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						if (getListener() != null) {
-							getListener().onAnimationEnd(FadeInAnimation.this);
-						}
-					}
-				});
+		AnimatorSet fadeSet = new AnimatorSet();
+		fadeSet.play(ObjectAnimator.ofFloat(view, View.ALPHA, 1f));
+		fadeSet.setInterpolator(interpolator);
+		fadeSet.setDuration(duration);
+		fadeSet.addListener(new AnimatorListenerAdapter() {
+
+			@Override
+			public void onAnimationEnd(Animator animation) {
+				if (getListener() != null) {
+					getListener().onAnimationEnd(FadeInAnimation.this);
+				}
+			}
+		});
+		return fadeSet;
 	}
 
 	/**
