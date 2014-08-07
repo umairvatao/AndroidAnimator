@@ -9,7 +9,7 @@ Developers are able to easily animate a specific view with a single line of code
 Usage
 =====
 
-*See `sample/` folder for a working implementation of this library.*
+*See `Animation_demo/` folder for a working implementation of this library.*
 
   1. For example, if you wanted a view to mimic the bounce animation with the default parameters,
   ```

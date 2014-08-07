@@ -323,10 +323,10 @@ public class AnimationDetailFragment extends Fragment implements
 				@Override
 				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
 					ParallelAnimator slideFadeInAnim = new ParallelAnimator();
-					slideFadeInAnim.setDuration(1000);
 					slideFadeInAnim.add(new SlideInAnimation(mImgBehind)
 							.setDirection(Animation.DIRECTION_RIGHT));
 					slideFadeInAnim.add(new FadeInAnimation(mImgBehind));
+					slideFadeInAnim.setDuration(1000);
 					slideFadeInAnim.setListener(slideFadeInAnimListener);
 					slideFadeInAnim.animate();
 				}
@@ -337,11 +337,11 @@ public class AnimationDetailFragment extends Fragment implements
 				@Override
 				public void onAnimationEnd(ParallelAnimator parallelAnimator) {
 					ParallelAnimator slideFadeOutAnim = new ParallelAnimator();
-					slideFadeOutAnim.setDuration(1000);
 					slideFadeOutAnim.add(new SlideOutAnimation(mImgTarget)
 							.setDirection(Animation.DIRECTION_RIGHT));
 					slideFadeOutAnim.add(new FadeOutAnimation(mImgTarget));
 					slideFadeOutAnim.setInterpolator(new LinearInterpolator());
+					slideFadeOutAnim.setDuration(1000);
 					slideFadeOutAnim.setListener(slideFadeOutAnimListener);
 					slideFadeOutAnim.animate();
 				}
@@ -358,21 +358,21 @@ public class AnimationDetailFragment extends Fragment implements
 					parallelPoints.add(new Point(0, 50));
 					parallelPoints.add(new Point(50, 50));
 					ParallelAnimator rotatePathAnim = new ParallelAnimator();
-					rotatePathAnim.setDuration(2000);
 					rotatePathAnim.add(new PathAnimation(mImgTarget)
 							.setPoints(parallelPoints));
 					rotatePathAnim.add(new RotationAnimation(mImgTarget));
 					rotatePathAnim.setInterpolator(new LinearInterpolator());
+					rotatePathAnim.setDuration(2000);
 					rotatePathAnim.setListener(rotatePathAnimListener);
 					rotatePathAnim.animate();
 				}
 			};
 
 			ParallelAnimator scaleFlipAnim = new ParallelAnimator();
-			scaleFlipAnim.setDuration(2000);
 			scaleFlipAnim.add(new ScaleInAnimation(mImgTarget));
 			scaleFlipAnim.add(new FlipHorizontalAnimation(mImgTarget));
 			scaleFlipAnim.add(new FlipVerticalAnimation(mImgTarget));
+			scaleFlipAnim.setDuration(2000);
 			scaleFlipAnim.setListener(scaleFlipAnimListener);
 			scaleFlipAnim.animate();
 			break;
