@@ -1,15 +1,14 @@
 AndroidAnimator
 ===============
 
-Temp change in forked
 
 AndroidAnimator library aims to simplify various animations for any provided view for Android developers in a single JAR file.
 
 Developers are able to easily animate a specific view with a single line of code using either the default parameters or customize them to their own liking.
 
 
-Usage
-=====
+Usage:
+======
 
 *See `Animation_demo/` folder for a working implementation of this library.*
 
