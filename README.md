@@ -28,15 +28,23 @@ Usage
   3. Here's another example of mimicking the explode animation with your own parameters as well as the addition of an animation listener.
   ```
     new ExplodeAnimation(yourView)
-      .setXParts(2)
-      .setYParts(2)
-      .setDuration(300)
+      .setExplodeMatrix(ExplodeAnimation.MATRIX_2X2)
+      .setDuration(500)
       .setListener(new AnimationListener() {
         @Override
         public void onAnimationEnd(Animation animation) {
           *perform your own functions here when animation ends*
         }
       })
+      .animate();
+  ```
+
+  4. It is also possible to play several animations in parallel using the `ParallelAnimator` class. The following example scales in a view and flips it horizontally at the same time.
+  ```
+    new ParallelAnimator()
+      .add(new ScaleInAnimation(yourView))
+      .add(new FlipHorizontalAnimation(yourView))
+      .setDuration(500)
       .animate();
   ```
 
